@@ -1,16 +1,14 @@
 # gd-place-2024-data
 
-History data from GD Place 2024. It contains info every placed and delete object, including the username of whom placed the object. See below for technical details, and how to read the data.
+History data from GD Place 2024. It contains info every placed and deleted object, including the username of who placed the object. See below for technical details, and how to read the data.
 
 ## Details
-
-Though the code below will be written in TypeScript, as the data is large a more powerful language may be recommended.
 
 The total width and heigh of the level is 800 blocks. It is divided into 20 by 20 block chunks.
 
 ### Types
 
-The history data follows the type below:
+The whole history data object follows the type below:
 
 ```typescript
 type Action = {
@@ -26,6 +24,8 @@ type PlacedObject = Action & {
 type DeletedObject = Action & {
   chunk: string; // A string `x,y` representing the chunk the object was placed in.
 }
+
+type HistoryData = PlacedObject | DeletedObject;
 ```
 
 The decoded objects have the following types:
@@ -68,11 +68,11 @@ type GDObject = {
 }
 ```
 
-To keep the size objects down, and to speed up their decoding, we chose to use an optimised binary format for encoding the object, which we then encoded with a custom base-encoding to prevent invalid characters from being inserted into the database. Below documents how to decode, read, and unoptimise these objects.
+To keep the size objects down, and to speed up their encoding and decoding, we chose to use an optimised binary format for the object data, which we then encoded with a custom base-encoding to prevent invalid characters from being inserted into the database. Below documents how to decode, read, and unoptimise these objects.
 
 ### Decoding
 
-The first step to extract the object data is to decode the data in the `object`. We used base 126 because we wanted a more efficient encoding than something like base 64, but were limited to the characters allowed inside Firebase. The code for decoding is contained within `decode.ts`, and an example usage is below:
+The first step to extract the object data is to decode the data from the custom base-encoding. We used base 126 because we wanted a more efficient encoding than something like base 64, but were limited to the characters allowed inside Firebase. The code for decoding is contained within `decode.ts`, and an example usage is below:
 
 ```typescript
 const decodedBytes = decodeString("hv5B+25&b.ygi#5N[ 	/F", 126);
@@ -122,4 +122,4 @@ console.log(originalObject)
 */
 ```
 
-You may observe some floating point innacuracies in the data, in which case we would recommend just rounding the numbers. 
+You may observe some floating point inaccuracies in the data, in which case we would recommend just rounding the numbers. 
